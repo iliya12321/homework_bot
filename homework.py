@@ -45,8 +45,7 @@ def send_message(bot, message):
     """Отправляет сообщение в телеграм бот."""
     try:
         logging.info(
-            f'Отправка сообщения в телеграм:'
-            '{TELEGRAM_CHAT_ID}:\n{message}'
+            f'Отправка сообщения в телеграм:{TELEGRAM_CHAT_ID}:\n{message}'
         )
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except Exception:
@@ -99,7 +98,6 @@ def check_response(response):
 
 def parse_status(homework):
     """Извлекает из информации о домашней работе статус этой работы."""
-
     try:
         if not isinstance(homework, dict):
             raise TypeError
