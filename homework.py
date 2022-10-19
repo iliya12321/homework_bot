@@ -44,7 +44,10 @@ HOMEWORK_STATUSES = {
 def send_message(bot, message):
     """Отправляет сообщение в телеграм бот."""
     try:
-        logging.info(f'Отправка сообщения в телеграм:{TELEGRAM_CHAT_ID}:\n{message}')
+        logging.info(
+            f'Отправка сообщения в телеграм:'
+            '{TELEGRAM_CHAT_ID}:\n{message}'
+        )
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except Exception:
         logging.error('Сбой при отправке сообщения в телеграм бот')
@@ -95,9 +98,8 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """
-    Извлекает из информации о конкретной домашней работе статус этой работы.
-    """
+    """Извлекает из информации о домашней работе статус этой работы."""
+
     try:
         if not isinstance(homework, dict):
             raise TypeError
@@ -133,9 +135,13 @@ def main():
     current_timestamp = int(time.time())
     status = ''
 
-    if check_tokens() == False:
-        logging.critical('Отсутствуют одна или несколько переменных окружения')
-        raise NotTokenException('Отсутствуют одна или несколько переменных окружения')
+    if not check_tokens():
+        logging.critical(
+            'Отсутствуют одна или несколько переменных окружения'
+        )
+        raise NotTokenException(
+            'Отсутствуют одна или несколько переменных окружения'
+        )
     while True:
         try:
             response = get_api_answer(current_timestamp)
