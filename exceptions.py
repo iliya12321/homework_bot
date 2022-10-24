@@ -1,4 +1,4 @@
-class ApiEmptyDataException(Exception):
+class NoSendingError(Exception):
     pass
 
 
@@ -6,16 +6,9 @@ class StatusException(Exception):
     pass
 
 
-class ApiDataException(Exception):
+class NotTokenException(NoSendingError):
     pass
 
 
-class ApiTokenException(Exception):
-    pass
-
-class HomeworkStatusError(Exception):
-    pass
-
-
-class NotTokenException(Exception):
+class SendMessageException(NoSendingError):
     pass
