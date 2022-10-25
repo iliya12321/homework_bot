@@ -4,3 +4,7 @@ pytest==6.2.5
 python-dotenv==0.19.0
 python-telegram-bot==13.7
 requests==2.26.0
+Flask==0.9
+Jinja2==2.6
+Werkzeug==0.8.3
+wsgiref==0.1.2
