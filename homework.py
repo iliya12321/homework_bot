@@ -179,8 +179,9 @@ if __name__ == '__main__':
         level=logging.INFO,
         handlers=[
             logging.FileHandler(
-                filename=os.path.join(os.path.dirname(__file__),
-                'my_logger.log')
+                filename=os.path.join(
+                    os.path.dirname(__file__), 'my_logger.log'
+                )
             ),
             logging.StreamHandler(sys.stdout)
         ],
