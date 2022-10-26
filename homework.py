@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 import time
-from wsgiref import headers
 
 import requests
 from dotenv import load_dotenv
@@ -180,7 +179,7 @@ if __name__ == '__main__':
         level=logging.INFO,
         handlers=[
             logging.FileHandler(
-                filename = __file__
+                filename=__file__
             ),
             logging.StreamHandler(sys.stdout)
         ],
