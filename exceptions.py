@@ -10,5 +10,5 @@ class NotTokenException(NoSendingError):
     pass
 
 
-class SendMessageException(NoSendingError):
+class SendMessageException(Exception):
     pass

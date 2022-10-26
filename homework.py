@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import time
+from wsgiref import headers
 
 import requests
 from dotenv import load_dotenv
@@ -32,7 +33,7 @@ def send_message(bot, message):
     try:
         logging.info('Отправка сообщения в телеграм')
         bot.send_message(TELEGRAM_CHAT_ID, message)
-    except SendMessageException as error:
+    except Exception as error:
         raise SendMessageException(
             'Что-то не так при отправке сообщения. '
             f'Id чата в который отправляется сообщение {TELEGRAM_CHAT_ID}, '
@@ -58,6 +59,7 @@ def get_api_answer(current_timestamp):
         raise ConnectionError(
             f'При запросе к API по адресу: "{requests_params["url"]}", '
             f'с параметрами: "{requests_params["params"]}", '
+            f'с заголовками: "{requests_params["headers"]}", '
             f'возникла ошибка: {error}'
         )
 
@@ -86,7 +88,7 @@ def check_response(response):
     if not isinstance(homeworks, list):
         raise TypeError(f'response не dict, a {type(homeworks)}')
 
-    return response.get('homeworks')
+    return homeworks
 
 
 def parse_status(homework):
@@ -122,14 +124,13 @@ def check_tokens():
     ]  # Без списка в этой функции пайтест не проходит
     available_token = True
     for tokens in SECRET_DATA:
+        logging.info(
+            f'PRACTICUM_TOKEN: {PRACTICUM_TOKEN}, '
+            f'TELEGRAM_TOKEN: {TELEGRAM_TOKEN}, '
+            f'TELEGRAM_CHAT_ID: {TELEGRAM_CHAT_ID}'
+        )
         if tokens is None:
             available_token = False
-            logging.info(
-                f'Что-то не так с переменными вот их значения,'
-                f'PRACTICUM_TOKEN: {PRACTICUM_TOKEN}, '
-                f'TELEGRAM_TOKEN: {TELEGRAM_TOKEN}, '
-                f'TELEGRAM_CHAT_ID: {TELEGRAM_CHAT_ID}'
-            )
     return available_token
 
 
@@ -150,15 +151,15 @@ def main():
     while True:
         try:
             response = get_api_answer(current_timestamp)
-            current_timestamp = response.get('current_date', 0)
             homework = check_response(response)
-            if homework is None or not homework:
+            if not homework:
                 logging.debug('отсутствие в ответе новых статусов')
                 continue
             message = parse_status(homework[0])
             if message != status:
                 send_message(bot, message)
                 status = message
+            current_timestamp = response.get('current_date', current_timestamp)
 
         except SendMessageException as error:
             logging.critical(f'Срочно надо исправить: {error}')
@@ -179,9 +180,7 @@ if __name__ == '__main__':
         level=logging.INFO,
         handlers=[
             logging.FileHandler(
-                filename=os.path.join(
-                    os.path.dirname(__file__), 'my_logger.log'
-                )
+                filename = __file__
             ),
             logging.StreamHandler(sys.stdout)
         ],
