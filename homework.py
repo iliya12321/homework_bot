@@ -131,7 +131,7 @@ def check_tokens():
 
 
 def errors_catcher(error):
-    """Выводит в ошибку более детальный ответ"""
+    """Выводит в ошибку более детальный ответ."""
     traceback = error.__traceback__.next
     error_func_name = traceback.nb_frame.f_code.co_name
     error_line = traceback.tb_lineno
