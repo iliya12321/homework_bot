@@ -126,7 +126,7 @@ def check_tokens():
     for token in SECRET_DATA:
         if not globals().get(token):
             available_token = False
-            logging.info(f'Отсутвует токен: {token}')
+            logging.info(f'Отсутвует токен: {token}, {TELEGRAM_CHAT_ID}')
     return available_token
 
 
