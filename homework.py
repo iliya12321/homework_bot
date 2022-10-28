@@ -130,6 +130,17 @@ def check_tokens():
     return available_token
 
 
+def errors_catcher(error):
+    traceback = error.__traceback__.next
+    error_func_name = traceback.nb_frame.f_code.co_name
+    error_line = traceback.tb_lineno
+    error_info = (
+        f'{error_func_name}, {error_line}, '
+        f'[{type(error).__name__}] {error}'
+    )
+    return error_info
+
+
 def main():
     """Основная логика работы бота."""
     if not check_tokens():
@@ -158,7 +169,7 @@ def main():
             current_timestamp = response.get('current_date', current_timestamp)
 
         except Exception as error:
-            logging.error(error)
+            logging.error(errors_catcher(error))
             if message != str(error):
                 message = str(error)
                 send_message(bot, message)
@@ -184,9 +195,7 @@ if __name__ == '__main__':
             '%(asctime)s, '
             '[%(levelname)s], '
             '%(message)s, '
-            '%(filename)s, '
-            '%(funcName)s, '
-            '%(lineno)d'
+            '%(filename)s'
         )
     )
     main()
