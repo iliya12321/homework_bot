@@ -173,7 +173,7 @@ if __name__ == '__main__':
         level=logging.INFO,
         handlers=[
             logging.handlers.RotatingFileHandler(
-                filename=__file__[:-2]+'log',
+                filename=__file__[:-2] + 'log',
                 maxBytes=500000,
                 backupCount=3,
                 encoding='utf-8'
