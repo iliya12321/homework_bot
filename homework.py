@@ -1,4 +1,5 @@
 import logging
+import logging.handlers
 import os
 import sys
 import time
@@ -7,7 +8,7 @@ import requests
 from dotenv import load_dotenv
 from telegram import Bot
 
-from exceptions import NotTokenException, SendMessageException, StatusException
+from exceptions import NotTokenException, StatusException
 
 load_dotenv()
 
@@ -26,6 +27,12 @@ HOMEWORK_VERDICTS = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
+SECRET_DATA = [
+    'PRACTICUM_TOKEN',
+    'TELEGRAM_TOKEN',
+    'TELEGRAM_CHAT_ID'
+]
+
 
 def send_message(bot, message):
     """Отправляет сообщение в телеграм бот."""
@@ -33,8 +40,8 @@ def send_message(bot, message):
         logging.info('Отправка сообщения в телеграм')
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except Exception as error:
-        raise SendMessageException(
-            'Что-то не так при отправке сообщения. '
+        logging.error(
+            f'Что-то не так при отправке сообщения. '
             f'Id чата в который отправляется сообщение {TELEGRAM_CHAT_ID}, '
             f'сообщение которое отправляется: {message}. '
             f'Возникла ошибка - {error}'
@@ -98,12 +105,11 @@ def parse_status(homework):
     if 'homework_name' not in homework:
         raise KeyError('Отсутсвует значение ключа homework_name')
 
-    homework_name = homework['homework_name']
-
     if 'status' not in homework:
         raise KeyError('Отсутствует ключ "status"')
 
     homework_status = homework['status']
+    homework_name = homework['homework_name']
 
     if homework_status not in HOMEWORK_VERDICTS:
         raise KeyError(
@@ -116,20 +122,11 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверяет доступность переменных окружения."""
-    SECRET_DATA = [
-        PRACTICUM_TOKEN,
-        TELEGRAM_TOKEN,
-        TELEGRAM_CHAT_ID
-    ]  # Без списка в этой функции пайтест не проходит
     available_token = True
-    for tokens in SECRET_DATA:
-        logging.info(
-            f'PRACTICUM_TOKEN: {PRACTICUM_TOKEN}, '
-            f'TELEGRAM_TOKEN: {TELEGRAM_TOKEN}, '
-            f'TELEGRAM_CHAT_ID: {TELEGRAM_CHAT_ID}'
-        )
-        if tokens is None:
+    for token in SECRET_DATA:
+        if not globals().get(token):
             available_token = False
+            logging.info(f'Отсутвует токен: {token}')
     return available_token
 
 
@@ -160,9 +157,6 @@ def main():
                 status = message
             current_timestamp = response.get('current_date', current_timestamp)
 
-        except SendMessageException as error:
-            logging.critical(f'Срочно надо исправить: {error}')
-
         except Exception as error:
             logging.error(error)
             if message != str(error):
@@ -178,8 +172,11 @@ if __name__ == '__main__':
     logging.basicConfig(
         level=logging.INFO,
         handlers=[
-            logging.FileHandler(
-                filename=__file__
+            logging.handlers.RotatingFileHandler(
+                filename=__file__[:-2]+'log',
+                maxBytes=500000,
+                backupCount=3,
+                encoding='utf-8'
             ),
             logging.StreamHandler(sys.stdout)
         ],
@@ -188,7 +185,7 @@ if __name__ == '__main__':
             '[%(levelname)s], '
             '%(message)s, '
             '%(filename)s, '
-            '%(funcname)s, '
+            '%(funcName)s, '
             '%(lineno)d'
         )
     )

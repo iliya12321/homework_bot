@@ -8,7 +8,3 @@ class StatusException(Exception):
 
 class NotTokenException(NoSendingError):
     pass
-
-
-class SendMessageException(Exception):
-    pass
