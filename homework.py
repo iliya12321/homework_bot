@@ -109,13 +109,13 @@ def parse_status(homework):
         raise KeyError('Отсутствует ключ "status"')
 
     homework_status = homework['status']
-    homework_name = homework['homework_name']
 
     if homework_status not in HOMEWORK_VERDICTS:
         raise KeyError(
             f'{homework_status} нет в словаре HOMEWORK_VERDICTS'
         )
 
+    homework_name = homework['homework_name']
     verdict = HOMEWORK_VERDICTS[homework_status]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
@@ -132,7 +132,7 @@ def check_tokens():
 
 def errors_catcher(error):
     """Выводит в ошибку более детальный ответ."""
-    traceback = error.__traceback__.next
+    traceback = error.__traceback__.next()  # Тут next не до конца понял
     error_func_name = traceback.nb_frame.f_code.co_name
     error_line = traceback.tb_lineno
     error_info = (
