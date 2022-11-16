@@ -115,8 +115,8 @@ def parse_status(homework):
             f'{homework_status} нет в словаре HOMEWORK_VERDICTS'
         )
 
-    homework_name = homework['homework_name']
     verdict = HOMEWORK_VERDICTS[homework_status]
+    homework_name = homework['homework_name']
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
